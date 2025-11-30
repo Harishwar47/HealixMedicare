@@ -1,0 +1,1188 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Healix MediCare — Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" th:href="@{/css/styles.css}" />
+    <style>
+        :root{
+            --primary-blue:#2f80ed;
+            --primary-teal:#00b49a;
+            --soft-blue:#e6f2ff;
+            --soft-teal:#d9fbf7;
+            --card-white:#ffffff;
+            --text-dark:#0b3a66;
+            --text-muted:#666;
+            --border-light:#e6eef9;
+        }
+        * { box-sizing: border-box; }
+        body{
+            margin:0;
+            font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
+            background:linear-gradient(135deg,var(--soft-blue) 0%,var(--soft-teal) 100%);
+            min-height:100vh;
+            display:flex;
+            overflow-x:hidden;
+        }
+        .split-container{
+            display:flex;
+            width:100%;
+            min-height:100vh;
+        }
+        .left-section{
+            flex:1;
+            background:linear-gradient(135deg,rgba(47,128,237,0.05) 0%,rgba(0,180,156,0.03) 100%);
+            display:flex;
+            flex-direction:column;
+            align-items:center;
+            justify-content:center;
+            padding:40px;
+            position:relative;
+        }
+        .healix-logo{
+            max-width:280px;
+            height:auto;
+            margin-bottom:30px;
+            filter:drop-shadow(0 4px 8px rgba(0,0,0,0.1));
+        }
+        .medical-illustration{
+            width:100%;
+            max-width:450px;
+            margin-top:20px;
+            opacity:0.9;
+        }
+        .illustration-placeholder{
+            width:100%;
+            max-width:450px;
+            height:300px;
+            background:linear-gradient(145deg,rgba(47,128,237,0.1),rgba(0,180,156,0.08));
+            border-radius:20px;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            margin-top:20px;
+            position:relative;
+            overflow:hidden;
+        }
+        .right-section{
+            flex:1;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            padding:40px;
+            background:rgba(255,255,255,0.02);
+        }
+        .login-card{
+            background:var(--card-white);
+            border-radius:20px;
+            box-shadow:0 20px 60px rgba(12,34,56,0.15);
+            padding:40px;
+            width:100%;
+            max-width:420px;
+            backdrop-filter:blur(10px);
+        }
+        .card-header{
+            text-align:center;
+            margin-bottom:30px;
+        }
+        .card-logo{
+            height:60px;
+            width:auto;
+            margin-bottom:20px;
+        }
+        .card-title{
+            font-size:28px;
+            font-weight:600;
+            color:var(--text-dark);
+            margin:0;
+        }
+        .card-subtitle{
+            font-size:14px;
+            color:var(--text-muted);
+            margin-top:8px;
+        }
+        .role-toggle{
+            display:flex;
+            gap:12px;
+            margin:25px 0;
+            background:#f8fafc;
+            padding:6px;
+            border-radius:12px;
+        }
+        .role-toggle button{
+            flex:1;
+            padding:12px 16px;
+            border-radius:8px;
+            border:none;
+            background:transparent;
+            color:var(--text-muted);
+            font-weight:500;
+            cursor:pointer;
+            transition:all 0.3s ease;
+        }
+        .role-toggle button.active{
+            background:linear-gradient(90deg,var(--primary-blue),var(--primary-teal));
+            color:white;
+            box-shadow:0 4px 12px rgba(47,128,237,0.3);
+        }
+        .patient-options{
+            display:flex;
+            gap:8px;
+            margin-bottom:20px;
+            background:#f1f5f9;
+            padding:4px;
+            border-radius:8px;
+        }
+        .patient-options button{
+            flex:1;
+            padding:10px;
+            border-radius:6px;
+            border:none;
+            background:transparent;
+            color:var(--text-muted);
+            font-weight:500;
+            cursor:pointer;
+            transition:all 0.2s ease;
+        }
+        .patient-options button.active{
+            background:white;
+            color:var(--text-dark);
+            box-shadow:0 2px 6px rgba(0,0,0,0.08);
+        }
+        .form-section{
+            margin:20px 0;
+        }
+        .form-row{
+            margin-bottom:16px;
+        }
+        .form-row input{
+            width:100%;
+            padding:14px 16px;
+            border-radius:10px;
+            border:1.5px solid var(--border-light);
+            font-size:15px;
+            background:white;
+            transition:all 0.3s ease;
+        }
+        .form-row input:focus{
+            outline:none;
+            border-color:var(--primary-blue);
+            box-shadow:0 0 0 3px rgba(47,128,237,0.1);
+        }
+        .forgot-link{
+            color:var(--primary-blue);
+            text-decoration:none;
+            font-size:14px;
+            font-weight:500;
+        }
+        .forgot-link:hover{
+            text-decoration:underline;
+        }
+        .login-btn{
+            width:100%;
+            padding:14px;
+            border-radius:10px;
+            border:none;
+            background:linear-gradient(90deg,var(--primary-blue),var(--primary-teal));
+            color:white;
+            font-size:16px;
+            font-weight:600;
+            cursor:pointer;
+            transition:all 0.3s ease;
+            margin-top:10px;
+        }
+        .login-btn:hover{
+            transform:translateY(-1px);
+            box-shadow:0 8px 25px rgba(47,128,237,0.3);
+        }
+        .info-text{
+            font-size:13px;
+            color:var(--text-muted);
+            margin-top:16px;
+            line-height:1.4;
+        }
+        .admin-icon{
+            position:fixed;
+            right:24px;
+            bottom:24px;
+            width:56px;
+            height:56px;
+            background:linear-gradient(135deg,var(--primary-blue),var(--primary-teal));
+            border-radius:50%;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            cursor:pointer;
+            box-shadow:0 8px 25px rgba(47,128,237,0.3);
+            font-size:20px;
+            color:white;
+            transition:all 0.3s ease;
+            z-index:1000;
+        }
+        .admin-icon:hover{
+            transform:scale(1.1);
+            box-shadow:0 12px 35px rgba(47,128,237,0.4);
+        }
+        .admin-modal{
+            position:fixed;
+            right:24px;
+            bottom:90px;
+            background:white;
+            padding:24px;
+            border-radius:16px;
+            box-shadow:0 20px 60px rgba(0,0,0,0.2);
+            display:none;
+            min-width:280px;
+            z-index:999;
+        }
+        .admin-modal.show{
+            display:block;
+            animation:slideUp 0.3s ease;
+        }
+        @keyframes slideUp{
+            from{opacity:0;transform:translateY(20px);}
+            to{opacity:1;transform:translateY(0);}
+        }
+        .modal-title{
+            font-weight:600;
+            margin-bottom:16px;
+            color:var(--text-dark);
+            font-size:16px;
+        }
+        
+        /* Notification Styles */
+        .notification {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px 30px;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+            z-index: 10000;
+            display: none;
+            text-align: center;
+            min-width: 300px;
+            border: 2px solid;
+        }
+        
+        .notification.success {
+            border-color: #28a745;
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .notification.error {
+            border-color: #dc3545;
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .notification .icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+            display: block;
+        }
+        
+        .notification.success .icon::before {
+            content: "✓";
+            color: #28a745;
+        }
+        
+        .notification.error .icon::before {
+            content: "✗";
+            color: #dc3545;
+        }
+        
+        .notification .message {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        
+        .notification-ok-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            min-width: 60px;
+        }
+        
+        .notification-ok-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        /* Confirmation Dialog */
+        .confirmation-dialog {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            z-index: 10000;
+            display: none;
+            text-align: center;
+            min-width: 400px;
+        }
+        
+        .confirmation-dialog .dialog-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 15px;
+        }
+        
+        .confirmation-dialog .dialog-message {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+        
+        .confirmation-dialog .dialog-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+        
+        .confirmation-dialog .dialog-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        
+        .confirmation-dialog .btn-confirm {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .confirmation-dialog .btn-cancel {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 9999;
+            display: none;
+        }
+        
+        @media (max-width: 768px) {
+            .split-container{flex-direction:column;}
+            .left-section{min-height:40vh;}
+            .right-section{min-height:60vh;}
+            .login-card{margin:20px;padding:30px;}
+        }
+    </style>
+    <!-- SockJS + Stomp CDN for realtime client -->
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+    <script th:src="@{/js/app.js}"></script>
+</head>
+<body>
+    <div class="split-container">
+        <!-- Left Section: Medical Illustration + Logo -->
+        <div class="left-section">
+            <!-- Healix MediCare Logo -->
+            <img class="healix-logo" th:src="@{/images/healix-logo.png}" alt="Healix MediCare" />
+            
+            <!-- Medical Illustration Placeholder -->
+            <div class="illustration-placeholder">
+                <!-- Enhanced Medical SVG Illustration -->
+                <svg width="400" height="280" viewBox="0 0 400 280" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Background Elements -->
+                    <circle cx="80" cy="70" r="45" fill="#e6f2ff" opacity="0.6"/>
+                    <circle cx="320" cy="200" r="35" fill="#d9fbf7" opacity="0.7"/>
+                    
+                    <!-- Doctor Figure -->
+                    <g transform="translate(60,40)">
+                        <circle cx="20" cy="20" r="18" fill="#2f80ed" opacity="0.8"/>
+                        <rect x="8" y="35" width="24" height="40" rx="12" fill="#2f80ed" opacity="0.6"/>
+                        <rect x="12" y="45" width="16" height="2" fill="white"/>
+                        <circle cx="16" cy="52" r="2" fill="white"/>
+                    </g>
+                    
+                    <!-- Patient Figure -->
+                    <g transform="translate(280,160)">
+                        <circle cx="20" cy="20" r="16" fill="#00b49a" opacity="0.8"/>
+                        <rect x="10" y="32" width="20" height="35" rx="10" fill="#00b49a" opacity="0.6"/>
+                    </g>
+                    
+                    <!-- Medical Cross -->
+                    <g transform="translate(180,80)">
+                        <rect x="18" y="10" width="4" height="30" fill="#2f80ed" opacity="0.7"/>
+                        <rect x="8" y="20" width="24" height="4" fill="#2f80ed" opacity="0.7"/>
+                        <circle cx="20" cy="25" r="25" fill="none" stroke="#00b49a" stroke-width="2" opacity="0.4"/>
+                    </g>
+                    
+                    <!-- Digital Elements -->
+                    <rect x="140" y="180" width="120" height="80" rx="8" fill="#e6f2ff" opacity="0.5"/>
+                    <rect x="150" y="190" width="15" height="3" fill="#2f80ed" opacity="0.6"/>
+                    <rect x="150" y="200" width="25" height="3" fill="#00b49a" opacity="0.6"/>
+                    <rect x="150" y="210" width="20" height="3" fill="#2f80ed" opacity="0.6"/>
+                    
+                    <!-- Connecting Lines -->
+                    <path d="M100 80 Q200 120 280 180" stroke="#00b49a" stroke-width="2" opacity="0.3" fill="none" stroke-dasharray="5,5"/>
+                </svg>
+            </div>
+            
+            <div style="text-align:center;margin-top:20px;">
+                <h2 style="color:var(--text-dark);font-size:32px;font-weight:700;margin:0;">Welcome to Healix</h2>
+                <p style="color:var(--text-muted);font-size:16px;margin:8px 0 0;">Professional Healthcare Management Platform</p>
+            </div>
+        </div>
+
+        <!-- Right Section: Login Card -->
+        <div class="right-section">
+            <div class="login-card">
+                <!-- Card Header with Logo -->
+                <div class="card-header">
+                    <img class="card-logo" th:src="@{/images/healix-logo.png}" alt="Healix MediCare" />
+                    <h1 class="card-title">Sign In</h1>
+                    <p class="card-subtitle">Access your healthcare dashboard</p>
+                </div>
+
+                <!-- Role Toggle Buttons -->
+                <div class="role-toggle">
+                    <button id="patientBtn" class="active">Patient</button>
+                    <button id="doctorBtn">Doctor</button>
+                </div>
+
+                <!-- Patient Section -->
+                <div id="patientSection" class="form-section">
+                    <!-- Patient Sub-options: Login/Create -->
+                    <div class="patient-options">
+                        <button id="pLogin" class="active">Login</button>
+                        <button id="pCreate">Create Account</button>
+                    </div>
+
+                    <!-- Patient Login Form -->
+                    <form id="patientLoginForm" th:action="@{/login}" method="post">
+                        <input type="hidden" name="loginType" value="patient" />
+                        <div class="form-row">
+                            <input name="username" placeholder="Patient ID" required />
+                        </div>
+                        <div class="form-row">
+                            <input name="password" type="password" placeholder="Password" required />
+                        </div>
+                        <div style="display:flex;justify-content:flex-end;margin:8px 0 16px;">
+                            <a href="#" id="forgotPasswordLink" class="forgot-link">Forgot Password?</a>
+                        </div>
+                        <button type="submit" class="login-btn">Login as Patient</button>
+                    </form>
+
+                    <!-- Forgot Password Form -->
+                    <form id="forgotPasswordForm" style="display:none;">
+                        <div class="form-row">
+                            <input id="forgotPatientId" placeholder="Enter Patient ID" required />
+                        </div>
+                        <button type="button" id="sendOtpBtn" class="login-btn">Send OTP to Email</button>
+                        <button type="button" id="backToLoginBtn" class="login-btn" style="background: #6c757d; margin-top: 10px;">Back to Login</button>
+                    </form>
+
+                    <!-- OTP Verification Form -->
+                    <form id="otpVerificationForm" style="display:none;">
+                        <div class="form-row">
+                            <input id="otpCode" placeholder="Enter 6-digit OTP" required maxlength="6" />
+                        </div>
+                        <button type="button" id="verifyOtpBtn" class="login-btn">Verify OTP</button>
+                        <button type="button" id="resendOtpBtn" class="login-btn" style="background: #6c757d; margin-top: 10px;">Resend OTP</button>
+                    </form>
+
+                    <!-- Reset Password Form -->
+                    <form id="resetPasswordForm" style="display:none;">
+                        <div class="form-row">
+                            <input id="newPassword" type="password" placeholder="Enter New Password" required />
+                        </div>
+                        <div class="form-row">
+                            <input id="confirmNewPassword" type="password" placeholder="Confirm New Password" required />
+                        </div>
+                        <button type="button" id="resetPasswordBtn" class="login-btn">Reset Password</button>
+                    </form>
+
+                    <!-- Patient Registration Form -->
+                    <form id="createForm" style="display:none;">
+                        <div class="form-row">
+                            <input id="fullName" placeholder="Full Name" required />
+                        </div>
+                        <div class="form-row">
+                            <input id="email" type="email" placeholder="Email ID" required />
+                        </div>
+                        <div class="form-row">
+                            <input id="pwd" type="password" placeholder="Password" required />
+                        </div>
+                        <button type="button" id="createAccountBtn" class="login-btn">Create Account</button>
+                        <p class="info-text">Patient ID will be auto-generated after registration</p>
+                    </form>
+                </div>
+
+                <!-- Doctor Section -->
+                <div id="doctorSection" class="form-section" style="display:none;">
+                    <form th:action="@{/login}" method="post">
+                        <input type="hidden" name="loginType" value="doctor" />
+                        <div class="form-row">
+                            <input name="username" placeholder="Doctor ID" required />
+                        </div>
+                        <div class="form-row">
+                            <input name="password" type="password" placeholder="Password" required />
+                        </div>
+                        <div style="display:flex;justify-content:flex-end;margin:8px 0 16px;">
+                            <a href="#" id="forgotLink" class="forgot-link">Forgot Password?</a>
+                        </div>
+                        <button type="submit" class="login-btn">Login as Doctor</button>
+                        <p class="info-text">Doctor accounts are created by Admin only</p>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Overlay for modals -->
+    <div class="overlay" id="overlay"></div>
+    
+    <!-- Notification -->
+    <div class="notification" id="notification">
+        <span class="icon"></span>
+        <p class="message" id="notificationMessage"></p>
+        <button class="notification-ok-btn" id="notificationOkBtn" onclick="closeNotification()">OK</button>
+    </div>
+    
+    <!-- Confirmation Dialog -->
+    <div class="confirmation-dialog" id="confirmationDialog">
+        <div class="dialog-title" id="dialogTitle">Confirm Action</div>
+        <div class="dialog-message" id="dialogMessage">Are you sure you want to proceed?</div>
+        <div class="dialog-buttons">
+            <button class="dialog-btn btn-confirm" id="confirmBtn">Confirm</button>
+            <button class="dialog-btn btn-cancel" id="cancelBtn">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Admin Icon -->
+    <div class="admin-icon" id="adminIcon" title="Admin Login">⚙️</div>
+    
+    <!-- Admin Modal -->
+    <div class="admin-modal" id="adminModal">
+        <div class="modal-title">Admin Login</div>
+        <form th:action="@{/login}" method="post">
+            <input type="hidden" name="loginType" value="admin" />
+            <div class="form-row">
+                <input name="username" placeholder="Admin ID" required />
+            </div>
+            <div class="form-row">
+                <input name="password" type="password" placeholder="Password" required />
+            </div>
+            <button type="submit" class="login-btn">Login as Admin</button>
+        </form>
+    </div>
+
+    <script>
+        // Check URL parameters for success/error messages
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const error = urlParams.get('error');
+            const type = urlParams.get('type');
+            
+            if (error) {
+                let message = 'Login failed. Please try again.';
+                
+                if (error === 'role_mismatch') {
+                    if (type === 'doctor_patient_mismatch') {
+                        message = 'Access denied! Doctors cannot login through Patient login section.';
+                    } else if (type === 'patient_doctor_mismatch') {
+                        message = 'Access denied! Patients cannot login through Doctor login section.';
+                    } else if (type === 'admin_required') {
+                        message = 'Admin access required for this section.';
+                    }
+                } else if (error === 'login_failed') {
+                    message = 'Invalid credentials. Please check your ID and password.';
+                }
+                
+                showNotification(message, 'error');
+            }
+        });
+
+        // UI toggles
+        const patientBtn = document.getElementById('patientBtn');
+        const doctorBtn = document.getElementById('doctorBtn');
+        const patientSection = document.getElementById('patientSection');
+        const doctorSection = document.getElementById('doctorSection');
+        const pLogin = document.getElementById('pLogin');
+        const pCreate = document.getElementById('pCreate');
+        const createForm = document.getElementById('createForm');
+        const patientLoginForm = document.getElementById('patientLoginForm');
+
+        patientBtn.addEventListener('click', ()=>{patientBtn.classList.add('active');doctorBtn.classList.remove('active');patientSection.style.display='block';doctorSection.style.display='none'});
+        doctorBtn.addEventListener('click', ()=>{doctorBtn.classList.add('active');patientBtn.classList.remove('active');doctorSection.style.display='block';patientSection.style.display='none'});
+
+        pLogin.addEventListener('click', ()=>{pLogin.classList.add('active');pCreate.classList.remove('active');patientLoginForm.style.display='block';createForm.style.display='none'});
+        pCreate.addEventListener('click', ()=>{pCreate.classList.add('active');pLogin.classList.remove('active');patientLoginForm.style.display='none';createForm.style.display='block'});
+
+        // admin modal
+        const adminIcon = document.getElementById('adminIcon');
+        const adminModal = document.getElementById('adminModal');
+        adminIcon.addEventListener('click', ()=>{
+            if(adminModal.classList.contains('show')){
+                adminModal.classList.remove('show');
+            } else {
+                adminModal.classList.add('show');
+            }
+        });
+
+        // Close admin modal when clicking outside
+        document.addEventListener('click', function(event) {
+            if (!adminIcon.contains(event.target) && !adminModal.contains(event.target)) {
+                adminModal.classList.remove('show');
+            }
+        });
+
+        // Notification functions
+        function showNotification(message, type, redirectUrl = null) {
+            const notification = document.getElementById('notification');
+            const messageEl = document.getElementById('notificationMessage');
+            const overlay = document.getElementById('overlay');
+            
+            messageEl.textContent = message;
+            notification.className = `notification ${type}`;
+            notification.style.display = 'block';
+            overlay.style.display = 'block';
+            
+            // Store redirect URL for later use
+            notification.dataset.redirectUrl = redirectUrl || '';
+        }
+        
+        function closeNotification() {
+            const notification = document.getElementById('notification');
+            const overlay = document.getElementById('overlay');
+            const redirectUrl = notification.dataset.redirectUrl;
+            
+            notification.style.display = 'none';
+            overlay.style.display = 'none';
+            
+            // Redirect if URL is provided
+            if (redirectUrl) {
+                window.location.href = redirectUrl;
+            }
+        }
+        
+        // Forgot password functionality
+        let currentPatientId = '';
+        
+        document.getElementById('forgotPasswordLink').addEventListener('click', (e) => {
+            e.preventDefault();
+            patientLoginForm.style.display = 'none';
+            document.getElementById('forgotPasswordForm').style.display = 'block';
+        });
+        
+        document.getElementById('backToLoginBtn').addEventListener('click', () => {
+            document.getElementById('forgotPasswordForm').style.display = 'none';
+            patientLoginForm.style.display = 'block';
+        });
+        
+        document.getElementById('sendOtpBtn').addEventListener('click', () => {
+            const patientId = document.getElementById('forgotPatientId').value;
+            if (!patientId) {
+                showNotification('Please enter your Patient ID', 'error');
+                return;
+            }
+            
+            currentPatientId = patientId;
+            fetch('/api/forgot-password', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({patientId})
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    showNotification('OTP sent to your email address', 'success');
+                    document.getElementById('forgotPasswordForm').style.display = 'none';
+                    document.getElementById('otpVerificationForm').style.display = 'block';
+                } else {
+                    showNotification(data.message || 'Patient ID not found', 'error');
+                }
+            })
+            .catch(e => showNotification('Error sending OTP. Please try again.', 'error'));
+        });
+        
+        document.getElementById('verifyOtpBtn').addEventListener('click', () => {
+            const otp = document.getElementById('otpCode').value;
+            if (!otp || otp.length !== 6) {
+                showNotification('Please enter a valid 6-digit OTP', 'error');
+                return;
+            }
+            
+            fetch('/api/verify-otp', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({patientId: currentPatientId, otp})
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    showNotification('OTP verified successfully', 'success');
+                    document.getElementById('otpVerificationForm').style.display = 'none';
+                    document.getElementById('resetPasswordForm').style.display = 'block';
+                } else {
+                    showNotification(data.message || 'Invalid OTP', 'error');
+                }
+            })
+            .catch(e => showNotification('Error verifying OTP. Please try again.', 'error'));
+        });
+        
+        document.getElementById('resendOtpBtn').addEventListener('click', () => {
+            fetch('/api/forgot-password', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({patientId: currentPatientId})
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    showNotification('OTP resent to your email', 'success');
+                } else {
+                    showNotification('Error resending OTP', 'error');
+                }
+            })
+            .catch(e => showNotification('Error resending OTP', 'error'));
+        });
+        
+        document.getElementById('resetPasswordBtn').addEventListener('click', () => {
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmNewPassword').value;
+            
+            if (!newPassword || !confirmPassword) {
+                showNotification('Please fill in both password fields', 'error');
+                return;
+            }
+            
+            if (newPassword !== confirmPassword) {
+                showNotification('Passwords do not match', 'error');
+                return;
+            }
+            
+            if (newPassword.length < 6) {
+                showNotification('Password must be at least 6 characters long', 'error');
+                return;
+            }
+            
+            fetch('/api/reset-password', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({patientId: currentPatientId, newPassword})
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    showNotification('Password reset successfully! Please login with your new password.', 'success');
+                    setTimeout(() => {
+                        document.getElementById('resetPasswordForm').style.display = 'none';
+                        patientLoginForm.style.display = 'block';
+                        patientLoginForm.querySelector('[name="username"]').value = currentPatientId;
+                    }, 2000);
+                } else {
+                    showNotification('Error resetting password', 'error');
+                }
+            })
+            .catch(e => showNotification('Error resetting password', 'error'));
+        });
+        
+        // Updated registration without confirm password
+        document.getElementById('createAccountBtn').addEventListener('click', ()=>{
+            const fullName = document.getElementById('fullName').value;
+            const email = document.getElementById('email').value;
+            const pwd = document.getElementById('pwd').value;
+            
+            if(!fullName||!email||!pwd){
+                showNotification('Please fill in all fields', 'error');
+                return;
+            }
+            
+            if(pwd.length < 6){
+                showNotification('Password must be at least 6 characters long', 'error');
+                return;
+            }
+            
+            fetch('/api/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({fullName,email,password:pwd})})
+                .then(r=>r.json()).then(j=>{
+                    if(j.patientId) {
+                        showNotification('Account created successfully! Your Patient ID: ' + j.patientId, 'success');
+                        pLogin.click(); 
+                        patientLoginForm.querySelector('[name=username]').value=j.patientId;
+                        // Clear form
+                        document.getElementById('fullName').value = '';
+                        document.getElementById('email').value = '';
+                        document.getElementById('pwd').value = '';
+                    } else {
+                        showNotification(j.error || 'Registration failed', 'error');
+                    }
+                })
+                .catch(e=>showNotification('Registration failed. Please try again.', 'error'))
+        });
+    </script>
+    <!-- JavaScript for Interactive Elements -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Role Toggle Functionality
+            const patientBtn = document.getElementById('patientBtn');
+            const doctorBtn = document.getElementById('doctorBtn');
+            const patientSection = document.getElementById('patientSection');
+            const doctorSection = document.getElementById('doctorSection');
+
+            patientBtn.addEventListener('click', function() {
+                patientBtn.classList.add('active');
+                doctorBtn.classList.remove('active');
+                patientSection.style.display = 'block';
+                doctorSection.style.display = 'none';
+            });
+
+            doctorBtn.addEventListener('click', function() {
+                doctorBtn.classList.add('active');
+                patientBtn.classList.remove('active');
+                doctorSection.style.display = 'block';
+                patientSection.style.display = 'none';
+            });
+
+            // Patient Login/Create Toggle
+            const pLogin = document.getElementById('pLogin');
+            const pCreate = document.getElementById('pCreate');
+            const patientLoginForm = document.getElementById('patientLoginForm');
+            const createForm = document.getElementById('createForm');
+
+            pLogin.addEventListener('click', function() {
+                pLogin.classList.add('active');
+                pCreate.classList.remove('active');
+                patientLoginForm.style.display = 'block';
+                createForm.style.display = 'none';
+            });
+
+            pCreate.addEventListener('click', function() {
+                pCreate.classList.add('active');
+                pLogin.classList.remove('active');
+                createForm.style.display = 'block';
+                patientLoginForm.style.display = 'none';
+            });
+
+            // Admin Modal Toggle
+            const adminIcon = document.getElementById('adminIcon');
+            const adminModal = document.getElementById('adminModal');
+
+            adminIcon.addEventListener('click', function() {
+                adminModal.classList.toggle('active');
+            });
+
+            // Close admin modal when clicking outside
+            document.addEventListener('click', function(event) {
+                if (!adminIcon.contains(event.target) && !adminModal.contains(event.target)) {
+                    adminModal.classList.remove('active');
+                }
+            });
+
+            // Create Account Handler
+            const createAccountBtn = document.getElementById('createAccountBtn');
+            createAccountBtn.addEventListener('click', function() {
+                const fullName = document.getElementById('fullName').value;
+                const email = document.getElementById('email').value;
+                const pwd = document.getElementById('pwd').value;
+                const pwd2 = document.getElementById('pwd2').value;
+
+                if (!fullName || !email || !pwd || !pwd2) {
+                    showNotification('Please fill all fields', 'error');
+                    return;
+                }
+
+                if (pwd !== pwd2) {
+                    showNotification('Passwords do not match', 'error');
+                    return;
+                }
+
+                if (pwd.length < 6) {
+                    showNotification('Password must be at least 6 characters', 'error');
+                    return;
+                }
+
+                // Generate patient ID (simulate)
+                const patientId = 'PAT' + Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+                
+                showNotification(`Account created successfully! Your Patient ID: ${patientId}. Please contact admin to activate your account.`, 'success');
+                
+                // Reset form and switch to login
+                document.getElementById('createForm').reset();
+                pLogin.click();
+            });
+
+            // Forgot password handler
+            const forgotLink = document.getElementById('forgotLink');
+            if (forgotLink) {
+                forgotLink.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    showForgotPasswordModal();
+                });
+            }
+
+            // Form validation enhancements
+            const forms = document.querySelectorAll('form');
+            forms.forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    const inputs = form.querySelectorAll('input[required]');
+                    let allValid = true;
+
+                    inputs.forEach(input => {
+                        if (!input.value.trim()) {
+                            input.style.borderColor = '#ff4757';
+                            allValid = false;
+                        } else {
+                            input.style.borderColor = '#e6eef9';
+                        }
+                    });
+
+                    if (!allValid) {
+                        e.preventDefault();
+                        showNotification('Please fill all required fields', 'error');
+                    }
+                });
+            });
+
+            // Input focus effects
+            const inputs = document.querySelectorAll('input');
+            inputs.forEach(input => {
+                input.addEventListener('focus', function() {
+                    this.parentElement.style.transform = 'translateY(-2px)';
+                    this.style.borderColor = '#2f80ed';
+                });
+
+                input.addEventListener('blur', function() {
+                    this.parentElement.style.transform = 'translateY(0)';
+                    if (this.value) {
+                        this.style.borderColor = '#00b49a';
+                    } else {
+                        this.style.borderColor = '#e6eef9';
+                    }
+                });
+            });
+
+            // Add subtle animations on page load
+            setTimeout(() => {
+                document.querySelector('.left-section').style.opacity = '1';
+                document.querySelector('.left-section').style.transform = 'translateX(0)';
+            }, 100);
+
+            setTimeout(() => {
+                document.querySelector('.login-card').style.opacity = '1';
+                document.querySelector('.login-card').style.transform = 'translateY(0) scale(1)';
+            }, 300);
+        });
+
+        // Forgot password functionality
+        let currentForgotStep = 'email';
+        let verificationToken = '';
+        
+        window.showForgotPasswordModal = function() {
+            // Create modal if not exists
+            let modal = document.getElementById('forgotPasswordModal');
+            if (!modal) {
+                createForgotPasswordModal();
+                modal = document.getElementById('forgotPasswordModal');
+            }
+            modal.style.display = 'block';
+            resetForgotPasswordModal();
+        };
+        
+        function createForgotPasswordModal() {
+            const modalHTML = '<div id="forgotPasswordModal" class="modal" style="display:none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5);">' +
+                '<div class="modal-content" style="background-color: white; margin: 5% auto; padding: 0; border-radius: 20px; width: 90%; max-width: 400px; position: relative; box-shadow: 0 20px 60px rgba(12,34,56,0.15);">' +
+                '<span class="close" onclick="closeForgotPasswordModal()" style="position: absolute; right: 15px; top: 15px; font-size: 28px; font-weight: bold; cursor: pointer; color: #999;">&times;</span>' +
+                '<div style="padding: 30px;">' +
+                '<h2 style="color: #2f80ed; margin-bottom: 20px; text-align: center;">Reset Password</h2>' +
+                '<div id="emailStep" class="forgot-step">' +
+                '<p style="color: #666; margin-bottom: 20px; text-align: center;">Enter your email address to receive an OTP:</p>' +
+                '<div class="form-group" style="margin-bottom: 20px;">' +
+                '<input type="email" id="forgotEmail" placeholder="Enter your email" style="width: 100%; padding: 12px; border: 2px solid #e6eef9; border-radius: 8px; font-size: 14px; box-sizing: border-box;">' +
+                '</div>' +
+                '<button onclick="sendOTP()" class="btn btn-primary" style="width: 100%; background: #2f80ed; border: none; padding: 12px; border-radius: 8px; color: white; font-size: 16px; cursor: pointer;">Send OTP</button>' +
+                '</div>' +
+                '<div id="otpStep" class="forgot-step" style="display: none;">' +
+                '<p style="color: #666; margin-bottom: 20px; text-align: center;">Enter the OTP sent to your email:</p>' +
+                '<div class="form-group" style="margin-bottom: 20px;">' +
+                '<input type="text" id="forgotOTP" placeholder="Enter 6-digit OTP" maxlength="6" style="width: 100%; padding: 12px; border: 2px solid #e6eef9; border-radius: 8px; font-size: 14px; text-align: center; letter-spacing: 2px; box-sizing: border-box;">' +
+                '</div>' +
+                '<button onclick="verifyOTP()" class="btn btn-primary" style="width: 100%; background: #2f80ed; border: none; padding: 12px; border-radius: 8px; color: white; font-size: 16px; cursor: pointer;">Verify OTP</button>' +
+                '<p style="text-align: center; margin-top: 10px;"><a href="#" onclick="resetForgotPasswordModal()" style="color: #2f80ed; font-size: 14px; text-decoration: none;">Back to email</a></p>' +
+                '</div>' +
+                '<div id="passwordStep" class="forgot-step" style="display: none;">' +
+                '<p style="color: #666; margin-bottom: 20px; text-align: center;">Enter your new password:</p>' +
+                '<div class="form-group" style="margin-bottom: 15px;">' +
+                '<input type="password" id="forgotNewPassword" placeholder="New password" style="width: 100%; padding: 12px; border: 2px solid #e6eef9; border-radius: 8px; font-size: 14px; box-sizing: border-box;">' +
+                '</div>' +
+                '<div class="form-group" style="margin-bottom: 20px;">' +
+                '<input type="password" id="forgotConfirmPassword" placeholder="Confirm password" style="width: 100%; padding: 12px; border: 2px solid #e6eef9; border-radius: 8px; font-size: 14px; box-sizing: border-box;">' +
+                '</div>' +
+                '<button onclick="resetPassword()" class="btn btn-primary" style="width: 100%; background: #2f80ed; border: none; padding: 12px; border-radius: 8px; color: white; font-size: 16px; cursor: pointer;">Reset Password</button>' +
+                '</div>' +
+                '<div id="forgotMessage" style="margin-top: 15px; padding: 10px; border-radius: 4px; display: none; text-align: center;"></div>' +
+                '</div>' +
+                '</div>' +
+                '</div>';
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+        }
+        
+        window.closeForgotPasswordModal = function() {
+            const modal = document.getElementById('forgotPasswordModal');
+            if (modal) modal.style.display = 'none';
+            resetForgotPasswordModal();
+        };
+        
+        function resetForgotPasswordModal() {
+            currentForgotStep = 'email';
+            verificationToken = '';
+            const steps = document.querySelectorAll('.forgot-step');
+            steps.forEach(step => step.style.display = 'none');
+            const emailStep = document.getElementById('emailStep');
+            if (emailStep) emailStep.style.display = 'block';
+            const message = document.getElementById('forgotMessage');
+            if (message) message.style.display = 'none';
+            // Clear inputs
+            const inputs = ['forgotEmail', 'forgotOTP', 'forgotNewPassword', 'forgotConfirmPassword'];
+            inputs.forEach(id => {
+                const input = document.getElementById(id);
+                if (input) input.value = '';
+            });
+        }
+        
+        async function sendOTP() {
+            const email = document.getElementById('forgotEmail').value.trim();
+            if (!email) {
+                showForgotMessage('Please enter your email address', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/forgot-password', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showForgotMessage(data.message + ' (Check browser console for OTP in demo)', 'success');
+                    setTimeout(() => {
+                        document.getElementById('emailStep').style.display = 'none';
+                        document.getElementById('otpStep').style.display = 'block';
+                        currentForgotStep = 'otp';
+                    }, 2000);
+                } else {
+                    showForgotMessage(data.error, 'error');
+                }
+            } catch (error) {
+                showForgotMessage('Network error. Please try again.', 'error');
+            }
+        }
+        
+        async function verifyOTP() {
+            const email = document.getElementById('forgotEmail').value.trim();
+            const otp = document.getElementById('forgotOTP').value.trim();
+            
+            if (!otp || otp.length !== 6) {
+                showForgotMessage('Please enter a valid 6-digit OTP', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/verify-otp', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, otp })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    verificationToken = data.token;
+                    showForgotMessage('OTP verified successfully!', 'success');
+                    setTimeout(() => {
+                        document.getElementById('otpStep').style.display = 'none';
+                        document.getElementById('passwordStep').style.display = 'block';
+                        currentForgotStep = 'password';
+                    }, 1500);
+                } else {
+                    showForgotMessage(data.error, 'error');
+                }
+            } catch (error) {
+                showForgotMessage('Network error. Please try again.', 'error');
+            }
+        }
+        
+        async function resetPassword() {
+            const email = document.getElementById('forgotEmail').value.trim();
+            const newPassword = document.getElementById('forgotNewPassword').value;
+            const confirmPassword = document.getElementById('forgotConfirmPassword').value;
+            
+            if (!newPassword || newPassword.length < 4) {
+                showForgotMessage('Password must be at least 4 characters', 'error');
+                return;
+            }
+            
+            if (newPassword !== confirmPassword) {
+                showForgotMessage('Passwords do not match', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/reset-password', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        email, 
+                        newPassword,
+                        token: verificationToken
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showForgotMessage('Password reset successfully! You can now login with your new password.', 'success');
+                    setTimeout(() => {
+                        closeForgotPasswordModal();
+                    }, 3000);
+                } else {
+                    showForgotMessage(data.error, 'error');
+                }
+            } catch (error) {
+                showForgotMessage('Network error. Please try again.', 'error');
+            }
+        }
+        
+        function showForgotMessage(message, type) {
+            const messageDiv = document.getElementById('forgotMessage');
+            if (!messageDiv) return;
+            messageDiv.textContent = message;
+            messageDiv.style.display = 'block';
+            messageDiv.style.backgroundColor = type === 'error' ? '#ffebee' : '#e8f5e8';
+            messageDiv.style.color = type === 'error' ? '#c62828' : '#2e7d2e';
+            messageDiv.style.border = '1px solid ' + (type === 'error' ? '#ffcdd2' : '#c8e6c8');
+        }
+
+
+    </script>
+
+    </body>
+</html>
