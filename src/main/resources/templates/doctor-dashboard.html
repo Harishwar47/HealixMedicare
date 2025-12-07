@@ -476,57 +476,51 @@
                             </div>
                             
                             <div class="row">
-                                <!-- Sample Patient Cards -->
-                                <div class="col-md-6">
-                                    <div class="patient-card">
-                                        <div class="d-flex justify-content-between align-items-start">
-                                            <div>
-                                                <h6 class="mb-1">John Doe</h6>
-                                                <p class="text-muted mb-1">Patient ID: PAT001</p>
-                                                <p class="text-muted mb-2">Last Visit: Oct 20, 2025</p>
-                                                <small class="text-success">
-                                                    <i class="fas fa-check-circle"></i> Treatment Complete
-                                                </small>
-                                            </div>
-                                            <div class="dropdown">
-                                                <button class="btn btn-sm btn-outline-secondary dropdown-toggle" 
-                                                        type="button" data-bs-toggle="dropdown">
-                                                    Actions
-                                                </button>
-                                                <ul class="dropdown-menu">
-                                                    <li><a class="dropdown-item" href="#" onclick="viewPatientHistory('PAT001')">View History</a></li>
-                                                    <li><a class="dropdown-item" href="#" onclick="addNotes('PAT001')">Add Notes</a></li>
-                                                    <li><a class="dropdown-item" href="#" onclick="scheduleFollowup('PAT001')">Schedule Follow-up</a></li>
-                                                </ul>
+                                <!-- Dynamic Patient Cards from Appointments -->
+                                <div th:if="${appointments != null and !appointments.isEmpty()}">
+                                    <div th:each="appt : ${appointments}" class="col-md-6 mb-3">
+                                        <div class="patient-card">
+                                            <div class="d-flex justify-content-between align-items-start">
+                                                <div>
+                                                    <h6 class="mb-1" th:text="${appt.patientName != null ? appt.patientName : 'Unknown Patient'}">Patient Name</h6>
+                                                    <p class="text-muted mb-1">Patient ID: <span th:text="${appt.patient != null ? appt.patient.username : 'N/A'}">Patient ID</span></p>
+                                                    <p class="text-muted mb-2" th:if="${appt.status == 'Completed'}">
+                                                        Last Visit: <span th:text="${appt.date}">Date</span>
+                                                    </p>
+                                                    <p class="text-muted mb-2" th:if="${appt.status != 'Completed'}">
+                                                        Next Appointment: <span th:text="${appt.date}">Date</span> at <span th:text="${appt.formattedTime}">Time</span>
+                                                    </p>
+                                                    <small th:if="${appt.status == 'Completed'}" class="text-success">
+                                                        <i class="fas fa-check-circle"></i> Treatment Complete
+                                                    </small>
+                                                    <small th:if="${appt.status == 'Pending' or appt.status == 'Confirmed'}" class="text-warning">
+                                                        <i class="fas fa-clock"></i> Pending Treatment
+                                                    </small>
+                                                    <small th:if="${appt.status == 'Cancelled'}" class="text-danger">
+                                                        <i class="fas fa-times-circle"></i> Cancelled
+                                                    </small>
+                                                </div>
+                                                <div class="dropdown">
+                                                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" 
+                                                            type="button" data-bs-toggle="dropdown">
+                                                        Actions
+                                                    </button>
+                                                    <ul class="dropdown-menu">
+                                                        <li><a class="dropdown-item" href="#" th:onclick="'viewPatientHistory(\'' + ${appt.patient != null ? appt.patient.username : ''} + '\')'">View History</a></li>
+                                                        <li><a class="dropdown-item" href="#" th:onclick="'addPrescription(' + ${appt.id} + ')'">Add Prescription</a></li>
+                                                        <li th:if="${appt.status != 'Completed'}"><a class="dropdown-item" href="#" th:onclick="'completeAppointment(' + ${appt.id} + ')'">Mark Complete</a></li>
+                                                    </ul>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                                 
-                                <div class="col-md-6">
-                                    <div class="patient-card">
-                                        <div class="d-flex justify-content-between align-items-start">
-                                            <div>
-                                                <h6 class="mb-1">Jane Smith</h6>
-                                                <p class="text-muted mb-1">Patient ID: PAT002</p>
-                                                <p class="text-muted mb-2">Next Appointment: Oct 28, 2025</p>
-                                                <small class="text-warning">
-                                                    <i class="fas fa-clock"></i> Pending Review
-                                                </small>
-                                            </div>
-                                            <div class="dropdown">
-                                                <button class="btn btn-sm btn-outline-secondary dropdown-toggle" 
-                                                        type="button" data-bs-toggle="dropdown">
-                                                    Actions
-                                                </button>
-                                                <ul class="dropdown-menu">
-                                                    <li><a class="dropdown-item" href="#" onclick="viewPatientHistory('PAT002')">View History</a></li>
-                                                    <li><a class="dropdown-item" href="#" onclick="addNotes('PAT002')">Add Notes</a></li>
-                                                    <li><a class="dropdown-item" href="#" onclick="scheduleFollowup('PAT002')">Schedule Follow-up</a></li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </div>
+                                <!-- No patients message -->
+                                <div th:if="${appointments == null or appointments.isEmpty()}" class="text-center py-5">
+                                    <i class="fas fa-users fa-3x text-muted mb-3"></i>
+                                    <h5 class="text-muted">No patients found</h5>
+                                    <p class="text-muted">Patients with appointments will appear here</p>
                                 </div>
                             </div>
                         </div>
@@ -960,6 +954,39 @@
         function viewPatientHistory(patientId) {
             showNotification(`Opening patient history for patient ${patientId}`, 'success');
             // In real app, this would show patient medical history
+        }
+
+        function addPrescription(appointmentId) {
+            // Open consultation modal for adding prescription
+            startConsultation(appointmentId);
+        }
+
+        function completeAppointment(appointmentId) {
+            // Mark appointment as complete
+            showConfirmDialog('Are you sure you want to mark this appointment as complete?', () => {
+                fetch(`/api/appointments/complete-consultation/${appointmentId}`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        diagnosis: 'Treatment completed',
+                        prescription: 'As prescribed',
+                        notes: 'Appointment marked complete'
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.message) {
+                        showNotification('Appointment marked as complete!', 'success');
+                        setTimeout(() => location.reload(), 1500);
+                    } else {
+                        showNotification(data.message || 'Error completing appointment', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showNotification('Error completing appointment', 'error');
+                });
+            });
         }
 
         function addNotes(patientId) {

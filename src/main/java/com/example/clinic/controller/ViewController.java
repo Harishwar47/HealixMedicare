@@ -59,6 +59,7 @@ public class ViewController {
             String dob = "";
             String gender = "";
             String bloodType = "";
+            Integer age = null;
             Optional<User> userOpt = userService.findByUsername(patientId);
             if (userOpt.isPresent()) {
                 User user = userOpt.get();
@@ -68,6 +69,7 @@ public class ViewController {
                 dob = user.getDateOfBirth() != null ? user.getDateOfBirth().toString() : "";
                 gender = user.getGender() != null ? user.getGender() : "";
                 bloodType = user.getBloodType() != null ? user.getBloodType() : "";
+                age = user.getAge(); // Auto-calculated from DOB
             }
             
             model.addAttribute("patientId", patientId);
@@ -77,6 +79,7 @@ public class ViewController {
             model.addAttribute("dob", dob);
             model.addAttribute("gender", gender);
             model.addAttribute("bloodType", bloodType);
+            model.addAttribute("age", age);
             model.addAttribute("username", fullName); // For welcome message
             model.addAttribute("doctors", doctorService.findAll());
             model.addAttribute("appointments", appointmentService.getAppointmentsByPatient(patientId));

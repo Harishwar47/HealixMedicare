@@ -1,6 +1,7 @@
 package com.example.clinic.model;
 
 import java.time.LocalDate;
+import java.time.Period;
 import java.util.Set;
 
 import jakarta.persistence.ElementCollection;
@@ -12,6 +13,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 @Entity
 @Table(name = "users")
@@ -34,6 +36,15 @@ public class User {
     @ElementCollection(fetch = FetchType.EAGER)
     @Enumerated(EnumType.STRING)
     private Set<Role> roles;
+
+    // Calculate age from date of birth
+    @Transient
+    public Integer getAge() {
+        if (dateOfBirth == null) {
+            return null;
+        }
+        return Period.between(dateOfBirth, LocalDate.now()).getYears();
+    }
 
     // getters and setters
     public Long getId() { return id; }

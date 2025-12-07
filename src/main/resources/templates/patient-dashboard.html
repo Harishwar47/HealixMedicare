@@ -557,7 +557,11 @@
                                         <label class="form-label">Date of Birth</label>
                                         <input type="date" id="profileDob" class="form-control" th:value="${dob}">
                                     </div>
-                                    <div class="col-md-4 mb-3">
+                                    <div class="col-md-2 mb-3">
+                                        <label class="form-label">Age</label>
+                                        <input type="text" id="profileAge" class="form-control" th:value="${age != null ? age : 'N/A'}" readonly style="background-color: #f0f0f0;">
+                                    </div>
+                                    <div class="col-md-3 mb-3">
                                         <label class="form-label">Gender</label>
                                         <select id="profileGender" class="form-select">
                                             <option value="">Select...</option>
@@ -566,7 +570,7 @@
                                             <option th:selected="${gender == 'Other'}">Other</option>
                                         </select>
                                     </div>
-                                    <div class="col-md-4 mb-3">
+                                    <div class="col-md-3 mb-3">
                                         <label class="form-label">Blood Type</label>
                                         <select id="profileBloodType" class="form-select">
                                             <option value="">Select...</option>
@@ -596,7 +600,43 @@
                             <h4><i class="fas fa-history"></i> Medical History</h4>
                         </div>
                         <div class="card-body p-4">
-                            <div class="text-center py-5">
+                            <div th:if="${appointments != null and !appointments.isEmpty()}">
+                                <div th:each="appt : ${appointments}" th:if="${appt.status == 'Completed'}">
+                                    <div class="card mb-3" style="border-left: 4px solid #27ae60;">
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col-md-8">
+                                                    <h5 class="mb-2">
+                                                        <i class="fas fa-user-md text-primary"></i> 
+                                                        Dr. <span th:text="${appt.doctor != null ? appt.doctor.name : 'Unknown'}">Doctor Name</span>
+                                                    </h5>
+                                                    <p class="text-muted mb-2">
+                                                        <i class="fas fa-calendar"></i> 
+                                                        <span th:text="${appt.date}">Date</span> at 
+                                                        <span th:text="${appt.formattedTime}">Time</span>
+                                                    </p>
+                                                    <p class="mb-2"><strong>Reason:</strong> <span th:text="${appt.reason}">Checkup</span></p>
+                                                    <div th:if="${appt.diagnosis != null and !#strings.isEmpty(appt.diagnosis)}">
+                                                        <p class="mb-2"><strong>Diagnosis:</strong></p>
+                                                        <p class="text-muted" th:text="${appt.diagnosis}">Diagnosis details</p>
+                                                    </div>
+                                                    <div th:if="${appt.prescription != null and !#strings.isEmpty(appt.prescription)}">
+                                                        <p class="mb-2"><strong>Prescription:</strong></p>
+                                                        <p class="text-muted" th:text="${appt.prescription}">Prescription details</p>
+                                                        <button class="btn btn-sm btn-primary mt-2" th:onclick="'downloadPrescription(' + ${appt.id} + ')'">
+                                                            <i class="fas fa-download"></i> Download Prescription
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4 text-end">
+                                                    <span class="badge bg-success">Treatment Complete</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div th:if="${appointments == null or appointments.isEmpty()}" class="text-center py-5">
                                 <i class="fas fa-notes-medical fa-3x text-muted mb-3"></i>
                                 <h5 class="text-muted">No medical history available</h5>
                                 <p class="text-muted">Your medical records will appear here after your first appointment</p>
@@ -651,6 +691,29 @@
                 showNotification('Login successful! Welcome to your dashboard.', 'success');
                 // Clean the URL
                 window.history.replaceState({}, document.title, window.location.pathname);
+            }
+            
+            // Auto-calculate age from date of birth
+            const dobInput = document.getElementById('profileDob');
+            const ageInput = document.getElementById('profileAge');
+            
+            if (dobInput && ageInput) {
+                dobInput.addEventListener('change', function() {
+                    if (this.value) {
+                        const dob = new Date(this.value);
+                        const today = new Date();
+                        let age = today.getFullYear() - dob.getFullYear();
+                        const monthDiff = today.getMonth() - dob.getMonth();
+                        
+                        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
+                            age--;
+                        }
+                        
+                        ageInput.value = age >= 0 ? age : 'N/A';
+                    } else {
+                        ageInput.value = 'N/A';
+                    }
+                });
             }
             
             // Navigation functionality
@@ -811,6 +874,34 @@
                 });
             });
         });
+        
+        // Prescription download function
+        function downloadPrescription(appointmentId) {
+            fetch('/api/prescription/download/' + appointmentId)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to generate prescription');
+                    }
+                    return response.blob();
+                })
+                .then(blob => {
+                    // Create download link
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'prescription_' + appointmentId + '.png';
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    document.body.removeChild(a);
+                    
+                    showNotification('Prescription downloaded successfully!', 'success');
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showNotification('Error downloading prescription. Please try again.', 'error');
+                });
+        }
     </script>
 
 </body>
